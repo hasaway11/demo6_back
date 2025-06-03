@@ -12,6 +12,7 @@ import org.springframework.stereotype.*;
 import org.springframework.web.multipart.*;
 
 import java.io.*;
+import java.security.*;
 import java.util.*;
 
 @Service
@@ -70,6 +71,17 @@ public class MemberService {
   public MemberDto.Read read(String loginId) {
     Member member = memberDao.findByUsername(loginId);
     return member.toRead();
+  }
+
+  public MemberDto.Read changeProfile(MultipartFile profile, String loginId) {
+    String base64Image = "";
+    try {
+      base64Image = Demo6Util.convertToBase64(profile);
+      memberDao.updateProfile(base64Image, loginId);
+    } catch(IOException e) {
+      System.out.println(e.getMessage());
+    }
+    return memberDao.findByUsername(loginId).toRead();
   }
 
   public boolean changePassword(MemberDto.PasswordChange dto, String loginId) {
