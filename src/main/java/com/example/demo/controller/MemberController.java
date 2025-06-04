@@ -10,6 +10,7 @@ import jakarta.validation.constraints.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.security.access.prepost.*;
+import org.springframework.stereotype.*;
 import org.springframework.validation.*;
 import org.springframework.validation.annotation.*;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ import java.util.*;
 // @Controller는 MVC와 REST 방식을 모두 지원
 // @RestController는 REST 방식만 지원(ModelAndView 리턴 불가)
 @Validated
-@RestController
+@Controller
 public class MemberController {
   @Autowired
   private MemberService service;
@@ -44,6 +45,12 @@ public class MemberController {
   public ResponseEntity<Member> signup(@ModelAttribute @Valid MemberDto.Create dto, BindingResult br) {
     Member member = service.signup(dto);
     return ResponseEntity.status(200).body(member);
+  }
+
+  @GetMapping("/api/members/verify")
+  public String verifyEmail(@RequestParam String code) {
+    String result = service.verify(code) ? "success" : "fail";
+    return "redirect://localhost:3000/member/email-verified?result=" + result;
   }
 
   @PreAuthorize("isAnonymous()")

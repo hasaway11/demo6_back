@@ -32,6 +32,7 @@ public class Member {
   private int failedAttempts = 0;
   @Builder.Default
   private boolean isLock = false;
+  private String code;
 
   public MemberDto.Read toRead() {
     long days = ChronoUnit.DAYS.between(joinDay, LocalDate.now());

@@ -47,6 +47,8 @@ public interface MemberDao {
   @Delete("delete from members where username=#{loginId}")
   int delete(String loginId);
 
+  @Update("update members set is_lock=0 where code=#{code} and rownum=1")
+  int verifyAndActive(String code);
 }
 
 

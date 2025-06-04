@@ -23,6 +23,8 @@ create table members (
 	constraint members_pk_username primary key(username)
 );
 
+-- alter table members add code varchar(20);
+
 create table posts (
 	pno number(6),
 	title varchar2(50 char),

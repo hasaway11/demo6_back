@@ -37,8 +37,8 @@ public class MemberDto {
     private MultipartFile profile;
 
     // DTO를 엔티티로 변환하는 메소드
-    public Member toEntity(String encodedPassword, String base64Image) {
-      return Member.builder().username(username).password(encodedPassword).email(email).profile(base64Image).isLock(true).build();
+    public Member toEntity(String encodedPassword, String base64Image, String code) {
+      return Member.builder().username(username).password(encodedPassword).email(email).profile(base64Image).isLock(true).code(code).build();
     }
   }
 

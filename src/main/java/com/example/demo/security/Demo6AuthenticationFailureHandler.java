@@ -19,9 +19,9 @@ public class Demo6AuthenticationFailureHandler implements AuthenticationFailureH
 
   @Override
   public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-    if(exception instanceof LockedException) {
+    if(exception instanceof LockedException)
       ResponseUtil.sendJsonResponse(response, 403, "비활성화된 계정입니다");
-    }
-    ResponseUtil.sendJsonResponse(response, 401, "아이디나 비밀번호를 확인하세요");
+    else
+      ResponseUtil.sendJsonResponse(response, 401, "아이디나 비밀번호를 확인하세요");
   }
 }

@@ -38,6 +38,7 @@ public class MemberService {
       MimeMessageHelper helper = new MimeMessageHelper(message, false, "utf-8");
       helper.setFrom(from);
       helper.setTo(to);
+      helper.setSubject(title);
       helper.setText(text, true);
       mailSender.send(message);
     } catch (MessagingException e) {
@@ -63,11 +64,10 @@ public class MemberService {
     } catch(IOException e) {
       base64Image = Demo6Util.getDefaultBase64Profile();
     }
-    // 3. 암호화된 비밀번호, base64이미지를 가지고 dto를 member로 변환(계정을 비활성화)
-    Member member = dto.toEntity(encodedPassword, base64Image);
-
-    // 코드를 생성한 다음
+    // 3. 암호화된 비밀번호, base64이미지, 가입 코드를 가지고 dto를 member로 변환(계정을 비활성화)
     String code = RandomStringUtils.secure().nextAlphanumeric(20);
+    Member member = dto.toEntity(encodedPassword, base64Image, code);
+
     String checkUrl = "http://localhost:8080/api/members/verify?code=" + code;
     String html = "<p>가입해주셔서 감사합니다</p>";
     html+= "<p>아래의 링크를 클릭하시면 가입이 완료됩니다</p>";
@@ -92,7 +92,7 @@ public class MemberService {
 
     String html = "<p>아래 임시비밀번호로 로그인하세요</p>";
     html+= "<p>" + newPassword  + "</p>";
-    sendMail("admin@icia.com", member.getEmail(), "가입 확인메일입니다", html);
+    sendMail("admin@icia.com", member.getEmail(), "임시비밀번호", html);
     return true;
   }
 
@@ -128,6 +128,12 @@ public class MemberService {
   public boolean checkPassword(String password, String loginId) {
     String encodedPassword = memberDao.findPasswordByUsername(loginId);
     return (encoder.matches(password, encodedPassword));
+  }
+
+  public boolean verify(String code) {
+    int result = memberDao.verifyAndActive(code);
+    System.out.println(result);
+    return result==1;
   }
 }
 

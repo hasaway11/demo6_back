@@ -19,17 +19,8 @@ public class AuthController {
 	// 비로그인 : 409 + null
 	@GetMapping(path="/api/auth/check")
 	public ResponseEntity<Map<String, String>> checkLogin(Principal principal, HttpSession session) {
-		System.out.println(session.getId());
 		if(principal!=null)
 			return ResponseEntity.ok(Map.of("username", principal.getName()));
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-	}
-
-	@GetMapping("/api/members/verify")
-	public String verifyEmail(@RequestParam String code) {
-		//boolean result =
-		//String status = result ? "success" : "fail";
-		//return new RedirectView("https://your-frontend.com/email-verified?result=" + status);
-		return "redirect://localhost:3000/member/email-verified?result=success";
 	}
 }

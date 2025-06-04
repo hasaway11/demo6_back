@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.dao.MemberDao">
 	<insert id="save">
-		insert into members(username, password, email, role, levels, join_day, is_lock, failed_attempts, profile)
-		values (#{username}, #{password}, #{email}, #{role}, #{level}, #{joinDay}, #{isLock}, #{failedAttempts}, #{profile})
+		insert into members(username, password, email, role, levels, join_day, is_lock, failed_attempts, profile, code)
+		values (#{username}, #{password}, #{email}, #{role}, #{level}, #{joinDay}, #{isLock}, #{failedAttempts}, #{profile}, #{code})
 	</insert>
 </mapper>
