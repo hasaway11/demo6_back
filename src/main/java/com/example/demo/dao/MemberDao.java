@@ -20,6 +20,9 @@ public interface MemberDao {
   @Select("select count(*) from members where username=#{dto.username} and email=#{dto.email} and rownum=1")
   boolean existsByUsernameAndEmail(@Param("dto") MemberDto.GeneratePassword dto);
 
+  @Update("update members set profile=#{profile} where username=#{username}")
+  int updateProfile(String profile, String username);
+
   @Update("update members set password=#{newPassword} where username=#{username}")
   int updatePassword(String username, String newPassword);
 

@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.*;
 import org.springframework.validation.*;
 import org.springframework.validation.annotation.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.*;
 
 import java.security.*;
 import java.util.*;
@@ -67,12 +68,12 @@ public class MemberController {
 
   @PreAuthorize("isAuthenticated()")
   @Operation(summary="비밀번호 확인", description="현재 접속 중인 사용자의 비밀번호를 재확인")
-  @PutMapping("/api/members/check-password")
+  @GetMapping("/api/members/check-password")
   public ResponseEntity<String> checkPassword(@RequestParam String password, Principal principal) {
     boolean checkSuccess = service.checkPassword(password, principal.getName());
     if(checkSuccess)
       return ResponseEntity.ok("비밀번호 확인 성공");
-    return ResponseEntity.status(HttpStatus.CONFLICT).body("비밀번호 확인 실");
+    return ResponseEntity.status(HttpStatus.CONFLICT).body("비밀번호 확인 실패");
   }
 
   // 내정보보기
@@ -84,7 +85,7 @@ public class MemberController {
     return ResponseEntity.ok(dto);
   }
 
-  // 비밀번호 변경
+  // 프사 변경
   @PreAuthorize("isAuthenticated()")
   @Operation(summary = "비밀번호 변경", description = "기존 비밀번호, 새 비밀번호로 비밀번호 변경")
   @PatchMapping("/api/members/password")
@@ -93,6 +94,15 @@ public class MemberController {
     if(result)
       return ResponseEntity.ok("비밀번호 변경");
     return ResponseEntity.status(409).body("비밀번호 변경 실패");
+  }
+
+  // 비밀번호 변경
+  @PreAuthorize("isAuthenticated()")
+  @Operation(summary = "프사 변경", description = "프사를 변경")
+  @PutMapping("/api/members/profile")
+  public ResponseEntity<MemberDto.Read> changeProfile(MultipartFile profile, Principal principal) {
+    MemberDto.Read member = service.changeProfile(profile, principal.getName());
+    return ResponseEntity.ok(member);
   }
 
   // 회원 탈퇴
