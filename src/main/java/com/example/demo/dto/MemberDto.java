@@ -43,13 +43,10 @@ public class MemberDto {
   }
 
   @Data
-  public static class GeneratePassword {
+  public static class ResetPassword {
     @NotEmpty
     @Pattern(regexp="^[a-z0-9]{6,10}$")
     private String username;
-    @NotEmpty
-    @Email
-    private String email;
   }
 
   @Data

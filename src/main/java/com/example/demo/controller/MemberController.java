@@ -57,12 +57,12 @@ public class MemberController {
   }
 
   @PreAuthorize("isAnonymous()")
-  @Operation(summary="임시비밀번호 발급", description="아이디와 이메일로 임시비밀번호를 발급")
+  @Operation(summary="임시비밀번호 발급", description="아이디로 임시비밀번호를 발급")
   @PutMapping("/api/members/password")
-  public ResponseEntity<String> getTemporaryPassword(@ModelAttribute @Valid MemberDto.GeneratePassword dto, BindingResult br) {
-    Optional<String> 임시비밀번호 = service.getTemporaryPassword(dto);
-    if(임시비밀번호.isPresent())
-      return ResponseEntity.ok(임시비밀번호.get());
+  public ResponseEntity<String> getTemporaryPassword(@ModelAttribute @Valid MemberDto.ResetPassword dto, BindingResult br) {
+    boolean result = service.getTemporaryPassword(dto);
+    if(result)
+      return ResponseEntity.ok("임시비밀번호를 가입 이메일로 보냈습니다");
     return ResponseEntity.status(HttpStatus.CONFLICT).body("사용자를 찾을 수 없습니다");
   }
 
@@ -85,7 +85,7 @@ public class MemberController {
     return ResponseEntity.ok(dto);
   }
 
-  // 프사 변경
+  // 비번 변경
   @PreAuthorize("isAuthenticated()")
   @Operation(summary = "비밀번호 변경", description = "기존 비밀번호, 새 비밀번호로 비밀번호 변경")
   @PatchMapping("/api/members/password")
@@ -96,7 +96,7 @@ public class MemberController {
     return ResponseEntity.status(409).body("비밀번호 변경 실패");
   }
 
-  // 비밀번호 변경
+  // 프사 변경
   @PreAuthorize("isAuthenticated()")
   @Operation(summary = "프사 변경", description = "프사를 변경")
   @PutMapping("/api/members/profile")
@@ -115,18 +115,3 @@ public class MemberController {
     return ResponseEntity.ok("회원 탈퇴");
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

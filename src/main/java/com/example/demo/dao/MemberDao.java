@@ -17,9 +17,6 @@ public interface MemberDao {
   @Select("select username from members where email=#{email} and rownum=1")
   Optional<String> findUsernameByEmail(String email);
 
-  @Select("select count(*) from members where username=#{dto.username} and email=#{dto.email} and rownum=1")
-  boolean existsByUsernameAndEmail(@Param("dto") MemberDto.GeneratePassword dto);
-
   @Update("update members set profile=#{profile} where username=#{username}")
   int updateProfile(String profile, String username);
 

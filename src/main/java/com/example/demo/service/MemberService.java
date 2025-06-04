@@ -69,9 +69,13 @@ public class MemberService {
     // 코드를 생성한 다음
     String code = RandomStringUtils.secure().nextAlphanumeric(20);
     String checkUrl = "http://localhost:8080/api/members/verify?code=" + code;
+    String html = "<p>가입해주셔서 감사합니다</p>";
+    html+= "<p>아래의 링크를 클릭하시면 가입이 완료됩니다</p>";
+    html+="<a href='" + checkUrl + "'>링크</a>";
+
     memberDao.save(member);
 
-    sendMail("admin@icia.com", member.getEmail(), "가입 확인메일입니다", checkUrl);
+    sendMail("admin@icia.com", member.getEmail(), "가입 확인메일입니다", html);
     return member;
   }
 
@@ -79,18 +83,17 @@ public class MemberService {
     return memberDao.findUsernameByEmail(email);
   }
 
-  public Optional<String> getTemporaryPassword(MemberDto.GeneratePassword dto) {
-    // 1. 아이디와 이메일이 일치하는 사용자가 있는 지 확인
-    // 2. 사용자가 없을 경우 비어있는 Optional을 리턴 -> 컨트롤러에서 if문으로 처리
-    // 3. 있을 경우 임시비밀번호를 생성
-    // 4. 임시비밀번호를 암호화해서 업데이트
-    // 5. 비밀번호를 Optional로 리턴
-    boolean isExist = memberDao.existsByUsernameAndEmail(dto);
-    if(!isExist)
-      return Optional.empty();
-    String newPassword = RandomStringUtils.secure().nextAlphanumeric(20);
-    memberDao.updatePassword(dto.getUsername(), newPassword);
-    return Optional.ofNullable(newPassword);
+  public boolean getTemporaryPassword(MemberDto.ResetPassword dto) {
+    Member member = memberDao.findByUsername(dto.getUsername());
+    if(member == null)
+      return false;
+    String newPassword = RandomStringUtils.secure().nextAlphanumeric(10);
+    memberDao.updatePassword(dto.getUsername(), encoder.encode(newPassword));
+
+    String html = "<p>아래 임시비밀번호로 로그인하세요</p>";
+    html+= "<p>" + newPassword  + "</p>";
+    sendMail("admin@icia.com", member.getEmail(), "가입 확인메일입니다", html);
+    return true;
   }
 
   public MemberDto.Read read(String loginId) {

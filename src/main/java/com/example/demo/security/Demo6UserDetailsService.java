@@ -17,10 +17,8 @@ public class Demo6UserDetailsService implements UserDetailsService {
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     Member m = memberDao.loadLoginData(username).orElseThrow(()->new UsernameNotFoundException("사용자가 없습니다"));
     // 아이디, 비밀번호, 권한, 계정블록여부 등을 담은 스프링 시큐리티 표준 UserDetails를 리턴
-    System.out.println(m);
     UserDetails user = User.builder().username(m.getUsername()).password(m.getPassword()).roles(m.getRole().name())
         .accountLocked(m.isLock()).build();
-    System.out.println(user);
     return User.builder().username(m.getUsername()).password(m.getPassword()).roles(m.getRole().name())
         .accountLocked(m.isLock()).build();
   }
