@@ -4,11 +4,15 @@ import com.example.demo.dao.*;
 import com.example.demo.dto.*;
 import com.example.demo.entity.*;
 import com.example.demo.util.*;
+import jakarta.mail.*;
+import jakarta.mail.internet.*;
 import jakarta.validation.*;
 import org.apache.commons.lang3.*;
 import org.springframework.beans.factory.annotation.*;
+import org.springframework.mail.javamail.*;
 import org.springframework.security.crypto.password.*;
 import org.springframework.stereotype.*;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.*;
 
 import java.io.*;
@@ -20,9 +24,24 @@ public class MemberService {
   private MemberDao memberDao;
   @Autowired
   private PasswordEncoder encoder;
+  @Autowired
+  private JavaMailSender mailSender;
 
   public boolean checkUsername(MemberDto.UsernameCheck dto) {
     return !memberDao.existsByUsername(dto.getUsername());
+  }
+
+  public void sendMail(String from, String to, String title, String text) {
+    MimeMessage message = mailSender.createMimeMessage();
+    try {
+      MimeMessageHelper helper = new MimeMessageHelper(message, false, "utf-8");
+      helper.setFrom(from);
+      helper.setTo(to);
+      helper.setText(text, true);
+      mailSender.send(message);
+    } catch (MessagingException e) {
+      e.printStackTrace();
+    }
   }
 
   public Member signup(MemberDto.Create dto) {
@@ -43,9 +62,15 @@ public class MemberService {
     } catch(IOException e) {
       base64Image = Demo6Util.getDefaultBase64Profile();
     }
-    // 3. 암호화된 비밀번호, base64이미지를 가지고 dto를 member로 변환
+    // 3. 암호화된 비밀번호, base64이미지를 가지고 dto를 member로 변환(계정을 비활성화)
     Member member = dto.toEntity(encodedPassword, base64Image);
+
+    // 코드를 생성한 다음
+    String code = RandomStringUtils.secure().nextAlphanumeric(20);
+    String checkUrl = "http://localhost:8080/api/members/verify?code=" + code;
     memberDao.save(member);
+
+    sendMail("admin@icia.com", member.getEmail(), "가입 확인메일입니다", checkUrl);
     return member;
   }
 

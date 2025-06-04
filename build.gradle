@@ -28,6 +28,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     testImplementation 'org.springframework.security:spring-security-test'
+    implementation("org.springframework.boot:spring-boot-starter-mail")
 
     // 랜덤한 문자열(임시비밀번호) 생성
     implementation("org.apache.commons:commons-lang3:3.17.0")

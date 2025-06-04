@@ -38,7 +38,7 @@ public class MemberDto {
 
     // DTO를 엔티티로 변환하는 메소드
     public Member toEntity(String encodedPassword, String base64Image) {
-      return Member.builder().username(username).password(encodedPassword).email(email).profile(base64Image).build();
+      return Member.builder().username(username).password(encodedPassword).email(email).profile(base64Image).isLock(true).build();
     }
   }
 
