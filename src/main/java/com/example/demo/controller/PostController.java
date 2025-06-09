@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.*;
 import java.util.*;
 
-// @Validated는 스프링 검증, 없으면 자바 표준 검증 수행. 스프링 검증이 좀 더 간략화
+// @Validated는 스프링 검증, 없으면 자바 검증 수행
 @Validated
 @RestController
 public class PostController {
