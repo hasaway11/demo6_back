@@ -29,7 +29,6 @@ public class MemberController {
   @Operation(summary= "아이디 확인", description="아이디가 사용가능한 지 확인")
   @GetMapping("/api/members/check-username")
   public ResponseEntity<String> checkUsername(@ModelAttribute @Valid MemberDto.UsernameCheck dto, BindingResult br) {
-    System.out.println(dto);
     boolean result = service.checkUsername(dto);
     if(result)
       return ResponseEntity.ok("사용가능합니다");
@@ -75,10 +74,12 @@ public class MemberController {
   @PreAuthorize("isAuthenticated()")
   @Operation(summary="비밀번호 확인", description="현재 접속 중인 사용자의 비밀번호를 재확인")
   @GetMapping("/api/members/check-password")
-  public ResponseEntity<String> checkPassword(@RequestParam String password, Principal principal) {
+  public ResponseEntity<String> checkPassword(@RequestParam String password, Principal principal, HttpSession session) {
     boolean checkSuccess = service.checkPassword(password, principal.getName());
-    if(checkSuccess)
+    if(checkSuccess) {
+      session.setAttribute("checkPassword", true);
       return ResponseEntity.ok("비밀번호 확인 성공");
+    }
     return ResponseEntity.status(HttpStatus.CONFLICT).body("비밀번호 확인 실패");
   }
 
