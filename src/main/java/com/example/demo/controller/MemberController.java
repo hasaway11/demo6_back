@@ -19,9 +19,6 @@ import org.springframework.web.multipart.*;
 import java.security.*;
 import java.util.*;
 
-// MVC 방식은 html로 응답 vs REST 방식은 데이터 + 상태코드로 응답
-// @Controller는 MVC와 REST 방식을 모두 지원
-// @RestController는 REST 방식만 지원(ModelAndView 리턴 불가)
 @Validated
 @Controller
 public class MemberController {
@@ -32,7 +29,6 @@ public class MemberController {
   @Operation(summary= "아이디 확인", description="아이디가 사용가능한 지 확인")
   @GetMapping("/api/members/check-username")
   public ResponseEntity<String> checkUsername(@ModelAttribute @Valid MemberDto.UsernameCheck dto, BindingResult br) {
-    System.out.println(dto);
     boolean result = service.checkUsername(dto);
     if(result)
       return ResponseEntity.ok("사용가능합니다");
@@ -47,7 +43,9 @@ public class MemberController {
     return ResponseEntity.status(200).body(member);
   }
 
+  @PreAuthorize("isAnonymous()")
   @GetMapping("/api/members/verify")
+  @Operation(summary="이메일 코드 확인", description="회원가입 후 코드 확인")
   public String verifyEmail(@RequestParam String code) {
     String result = service.verify(code) ? "success" : "fail";
     return "redirect://localhost:3000/member/email-verified?result=" + result;
@@ -76,14 +74,15 @@ public class MemberController {
   @PreAuthorize("isAuthenticated()")
   @Operation(summary="비밀번호 확인", description="현재 접속 중인 사용자의 비밀번호를 재확인")
   @GetMapping("/api/members/check-password")
-  public ResponseEntity<String> checkPassword(@RequestParam String password, Principal principal) {
+  public ResponseEntity<String> checkPassword(@RequestParam String password, Principal principal, HttpSession session) {
     boolean checkSuccess = service.checkPassword(password, principal.getName());
-    if(checkSuccess)
+    if(checkSuccess) {
+      session.setAttribute("checkPassword", true);
       return ResponseEntity.ok("비밀번호 확인 성공");
+    }
     return ResponseEntity.status(HttpStatus.CONFLICT).body("비밀번호 확인 실패");
   }
 
-  // 내정보보기
   @PreAuthorize("isAuthenticated()")
   @Operation(summary = "내 정보 보기", description = "내 정보 보기")
   @GetMapping("/api/members/member")
@@ -92,7 +91,14 @@ public class MemberController {
     return ResponseEntity.ok(dto);
   }
 
-  // 비번 변경
+  @PreAuthorize("isAuthenticated()")
+  @Operation(summary = "프사 변경", description = "프사를 변경")
+  @PutMapping("/api/members/profile")
+  public ResponseEntity<MemberDto.Read> changeProfile(MultipartFile profile, Principal principal) {
+    MemberDto.Read member = service.changeProfile(profile, principal.getName());
+    return ResponseEntity.ok(member);
+  }
+
   @PreAuthorize("isAuthenticated()")
   @Operation(summary = "비밀번호 변경", description = "기존 비밀번호, 새 비밀번호로 비밀번호 변경")
   @PatchMapping("/api/members/password")
@@ -103,16 +109,6 @@ public class MemberController {
     return ResponseEntity.status(409).body("비밀번호 변경 실패");
   }
 
-  // 프사 변경
-  @PreAuthorize("isAuthenticated()")
-  @Operation(summary = "프사 변경", description = "프사를 변경")
-  @PutMapping("/api/members/profile")
-  public ResponseEntity<MemberDto.Read> changeProfile(MultipartFile profile, Principal principal) {
-    MemberDto.Read member = service.changeProfile(profile, principal.getName());
-    return ResponseEntity.ok(member);
-  }
-
-  // 회원 탈퇴
   @PreAuthorize("isAuthenticated()")
   @Operation(summary = "회원 탈퇴", description = "로그아웃시킨 후 회원 탈퇴")
   @DeleteMapping("/api/members/member")

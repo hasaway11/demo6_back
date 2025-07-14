@@ -6,6 +6,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.security.core.*;
+import org.springframework.security.core.userdetails.*;
 import org.springframework.security.web.authentication.*;
 import org.springframework.stereotype.*;
 
@@ -18,14 +19,9 @@ public class Demo6AuthenticationSuccessHandler implements AuthenticationSuccessH
   private MemberDao memberDao;
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-    // 로그인 실패 횟수 리셋
-    String loginId = authentication.getName();
-    memberDao.reset로그인실패횟수(loginId);
-
-    // JSON 응답 생성
-    Map<String, String> responseBody = new HashMap<>();
-    responseBody.put("username", loginId);
-    ResponseUtil.sendJsonResponse(response, 200, responseBody);
+    String username = authentication.getName();
+    String role = authentication.getAuthorities().stream().findFirst().get().getAuthority();
+    ResponseUtil.sendJsonResponse(response, 200, Map.of("username", username, "role", role));
   }
 }
 

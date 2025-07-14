@@ -1,8 +1,6 @@
 package com.example.demo.dao;
 
-import com.example.demo.dto.*;
 import com.example.demo.entity.*;
-import jakarta.validation.constraints.*;
 import org.apache.ibatis.annotations.*;
 
 import java.util.*;
@@ -47,7 +45,7 @@ public interface MemberDao {
   @Delete("delete from members where username=#{loginId}")
   int delete(String loginId);
 
-  @Update("update members set is_lock=0 where code=#{code} and rownum=1")
+  @Update("update members set is_lock=0, code=null where code=#{code} and rownum=1")
   int verifyAndActive(String code);
 }
 
