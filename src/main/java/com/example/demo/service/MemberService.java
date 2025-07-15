@@ -67,7 +67,7 @@ public class MemberService {
     // 3. 암호화된 비밀번호, base64이미지, 가입 코드를 가지고 dto를 member로 변환(계정을 비활성화)
     String code = RandomStringUtils.secure().nextAlphanumeric(20);
     Member member = dto.toEntity(encodedPassword, base64Image, code);
-    String checkUrl = "http://localhost:8080/api/members/verify?code=" + code;
+    String checkUrl = "https://demo6-back.onrender.com/api/members/verify?code=" + code;
     String html = "<p>가입해주셔서 감사합니다</p>";
     html+= "<p>아래의 링크를 클릭하시면 가입이 완료됩니다</p>";
     html+="<a href='" + checkUrl + "'>링크</a>";
