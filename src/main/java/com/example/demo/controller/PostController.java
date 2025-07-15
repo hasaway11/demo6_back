@@ -4,11 +4,13 @@ import com.example.demo.dto.*;
 import com.example.demo.entity.*;
 import com.example.demo.service.*;
 import io.swagger.v3.oas.annotations.*;
+import jakarta.servlet.http.*;
 import jakarta.validation.*;
 import jakarta.validation.constraints.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.security.access.annotation.*;
+import org.springframework.security.core.*;
 import org.springframework.validation.*;
 import org.springframework.validation.annotation.*;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +27,9 @@ public class PostController {
 
   @Operation(summary="페이징", description="기본 페이지번호 1, 페이지크기 10으로 페이징")
   @GetMapping("/api/posts")
-  public ResponseEntity<PostDto.Pages> findAll(@RequestParam(defaultValue="1") int pageno, @RequestParam(defaultValue="10") int pagesize) {
+  public ResponseEntity<PostDto.Pages> findAll(@RequestParam(defaultValue="1") int pageno, @RequestParam(defaultValue="10") int pagesize, HttpSession session, Authentication auth) {
+    System.out.println(auth);
+    System.out.println(session.getId());
     return ResponseEntity.ok(service.findAll(pageno, pagesize));
   }
 
