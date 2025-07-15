@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.context.annotation.*;
 import org.springframework.security.config.annotation.method.configuration.*;
 import org.springframework.security.config.annotation.web.builders.*;
+import org.springframework.security.config.http.*;
 import org.springframework.security.crypto.bcrypt.*;
 import org.springframework.security.crypto.password.*;
 import org.springframework.security.web.*;
@@ -44,6 +45,7 @@ public class SecurityConfig {
 
     config.formLogin(form->form.loginPage("/login").loginProcessingUrl("/login")
         .successHandler(authenticationSuccessHandler).failureHandler(authenticationFailureHandler));
+    config.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
     config.logout(logout-> logout.logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler));
     config.exceptionHandling(handler->
         handler.accessDeniedHandler(accessDeniedHandler).authenticationEntryPoint(authenticationEntryPoint));
@@ -53,7 +55,7 @@ public class SecurityConfig {
   @Bean
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration config = new CorsConfiguration();
-    config.setAllowedOriginPatterns(List.of("https://hasaway11.github.io/", "http://localhost:3000"));
+    config.setAllowedOrigins(List.of("https://hasaway11.github.io/", "http://localhost:3000"));
     config.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "PATCH", "DELETE"));
     config.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
     config.setAllowCredentials(true);
